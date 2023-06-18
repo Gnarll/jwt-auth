@@ -19,8 +19,10 @@ class UserService {
       password: hashedPassword,
       activationLink,
     });
-
-    await mailService.sendActivationMail(email, activationLink);
+    await mailService.sendActivationMail(
+      email,
+      `${process.env.API_URL}/api/activate/${activationLink}`
+    );
 
     const userDto = new UserDto(user);
     const tokens = tokenService.generateTokens({ ...userDto });
