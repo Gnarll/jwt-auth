@@ -44,9 +44,9 @@ class UserService {
 
   async login(email, password) {
     const user = await userModel.findOne({ email });
-    if (!user) throw new ApiError.BadRequest("Неверно введенный email");
+    if (!user) return ApiError.BadRequest("Неверно введенный email");
     const isPassEquals = await bcrypt.compare(password, user.password);
-    if (!isPassEquals) throw new ApiError.BadRequest("Неверный пароль");
+    if (!isPassEquals) return ApiError.BadRequest("Неверный пароль");
     const userDto = new UserDto(user);
     const tokens = tokenService.generateTokens({ ...userDto });
     await tokenService.saveToken(userDto.id, tokens.refreshToken);
@@ -74,6 +74,11 @@ class UserService {
     await tokenService.saveToken(userDto.id, tokens.refreshToken);
 
     return { ...tokens, user: userDto };
+  }
+
+  async getUsers() {
+    const users = await userModel.find();
+    return users;
   }
 }
 
